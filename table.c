@@ -78,23 +78,95 @@ int main(void)
 } // main
 
 // -----------------------------------------------------------------------------------------
-// insert
+// insertItem
 //
-// PURPOSE: inserts the value in the correct spot in the table (so that table is sorted)
-// INPUT: an integer to insert into the table
-// OUTPUT: return true if the value was successfully inserted and false otherwise
+// PURPOSE: if the value is unique then it inserts the value in the correct spot in the table 
+// (so that table is sorted).
+// INPUT: an integer to insert into the table.
+// OUTPUT: return true if the value was successfully inserted and false otherwise.
 // -----------------------------------------------------------------------------------------
-
 bool insertItem(int item)
 {
 	// PRECONDITIONS: table either doesn't exist or is valid, that newValue is a valid
 	// entry
-	// POSTCONDITIONS: table is valid, totalEntries increased by one, totalEnteries >= 1
-	// is the newEntry valid?
+	// POSTCONDITIONS: table is valid (checks for sorted), totalEntries increased by one, 
+	// totalEnteries >= 1
 	
 } // insertItem
 
 // -----------------------------------------------------------------------------------------
+// removeItem
+//
+// PURPOSE: removes the value.
+// INPUT: an integer to remove from the table.
+// OUTPUT: return true if the value was successfully removed and false otherwise.
+// -----------------------------------------------------------------------------------------
+bool removeItem(int item)
+{
+	// PRECONDITIONS: The table isn't empty, the table is valid, totalEntries => 1.
+	// POSTCONDITIONS: The table does not include item, totalEntries => 0, table is 
+	// either valid or HEAD == NULL. 
+	
+} // removeItem
+
+// -----------------------------------------------------------------------------------------
+// clearTable
+//
+// PURPOSE: empty the table so that we clear all memory (and can start a fresh table).
+// -----------------------------------------------------------------------------------------
+void clearTable(void)
+{
+	// PRECONDITION: totalEntries >= 1, head != NULL
+	// POSTCONDITION: totalEntries == 0, head == NULL, TAIL == NULL
+} // clearTable
+
+// -----------------------------------------------------------------------------------------
+// search
+//
+// PURPOSE: tells us wether or not a given item is in the table. 
+// INPUT: the int to search for in the table. 
+// OUTPUT: Returns true if the item was found in the table and false if it was not found.
+// -----------------------------------------------------------------------------------------
+bool search (int item)
+{
+	// PRECONDITION: The table is valid (totalEntries >= 1, the table is sorted ...)
+	// POSTCONDITION: The table is still valid, table entry where the item was found is
+	// still valid
+	
+} // search
+
+// ---------------------------------------------------------------------------------------
+// firstItem
+//
+// PURPOSE: table iterator. Sets traverseEntry to the head entry and sets the int input 
+// item to the value of traverseEntry. Used to start traversals at the start of the table. 
+// INPUT: the pointer to the int that will store traverseEntry's value.
+// OUTPUT: returns true if the item was assigned a value and false if the item was *not*
+// assigned a value.
+// ---------------------------------------------------------------------------------------
+bool firstItem(int * const item)
+{
+	// PRECONDITION: The table is valid, first item is a valid entry, the table has at 
+	// least one item.
+	// POSTCONDITION: The table is still valid, the first item is still a valid entry.
+} // firstItem
+
+// ---------------------------------------------------------------------------------------
+// nextItem
+//
+// PURPOSE: table iterator. Sets input to the value of the current traversalEntry and 
+// increments the traversalEntry. 
+// INPUT: the pointer that will store traverseEntry's value. 
+// OUTPUT: returns true if the item was assigned a value and false if the item was *not*
+// assigned a value.
+// ---------------------------------------------------------------------------------------
+bool nextItem(int * const item)
+{
+	// PRECONDITIONS: the table is valid, totalEntries >= 2
+	// POSTCONDITIONS: the table is still valid, traverseEntry is still valid
+} // nextItem
+
+// ---------------------------------------------------------------------------------------
 // display
 //
 // PURPOSE: Prints out the entir table
