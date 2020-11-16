@@ -13,7 +13,6 @@ typedef enum BOOL {false, true} bool;
 struct Entry 
 {
 	entry *next;
-	entry *prev; // previous
 	int value;
 };
 
@@ -30,7 +29,7 @@ static int totalEntries = 0;
 bool insertItem(int);
 bool removeItem(int); 
 void clearTable(void);
-bool search(it);
+bool search(int);
 bool firstItem(int * const);
 bool nextItem(int * const);
 
@@ -42,31 +41,27 @@ static void validTable(void);
 int main(void)
 {
 	
-//	entry *newEntry = NULL; 
+	entry *newEntry = NULL; 
 	int i;
 	int size = 5;
-	int value; 
-
-//	newEntry = malloc(sizeof(entry));
-//	newEntry -> value = 0;
-//	newEntry -> prev = NULL;
-//	newEntry -> next = NULL;
-//	head = newEntry;
-//	tail = newEntry;
-//	totalEntries++;
-
-	for(i = 1; i <= size; i++)
+	
+	for(i = 0; i < size; i++)
 	{
-	//	newEntry = malloc( sizeof(entry));
-	//	newEntry -> value = i*5;
-	//	newEntry -> next = NULL;
-	//	newEntry -> prev = tail; 
-	//	tail -> next = newEntry;	
-	//	tail = newEntry;
-	//	totalEntries++;
-		printf("What number do you want to add?" );
-		scanf("%d", &value);
-		printf("%i\n",insert(value));
+		newEntry = malloc( sizeof(entry));
+		newEntry -> value = i*size;
+		newEntry -> next = tail;
+		
+		tail = newEntry;
+		
+		if (!head && totalEntries == 0)
+		{
+			head = newEntry;
+		}
+
+		totalEntries++;
+//		printf("What number do you want to add?" );
+//		scanf("%d", &value);
+//		printf("%i\n",insertItem(value));
 	}
 
 	display();
@@ -92,6 +87,10 @@ bool insertItem(int item)
 	// POSTCONDITIONS: table is valid (checks for sorted), totalEntries increased by one, 
 	// totalEnteries >= 1
 	
+	bool result = true;
+
+	return result;
+	
 } // insertItem
 
 // -----------------------------------------------------------------------------------------
@@ -107,6 +106,9 @@ bool removeItem(int item)
 	// POSTCONDITIONS: The table does not include item, totalEntries => 0, table is 
 	// either valid or HEAD == NULL. 
 	
+	bool result = true;
+
+	return result;
 } // removeItem
 
 // -----------------------------------------------------------------------------------------
@@ -118,6 +120,7 @@ void clearTable(void)
 {
 	// PRECONDITION: totalEntries >= 1, head != NULL
 	// POSTCONDITION: totalEntries == 0, head == NULL, TAIL == NULL
+	
 } // clearTable
 
 // -----------------------------------------------------------------------------------------
@@ -133,13 +136,17 @@ bool search (int item)
 	// POSTCONDITION: The table is still valid, table entry where the item was found is
 	// still valid
 	
+	bool result = true;
+
+	return result;
 } // search
 
 // ---------------------------------------------------------------------------------------
 // firstItem
 //
-// PURPOSE: table iterator. Sets traverseEntry to the head entry and sets the int input 
-// item to the value of traverseEntry. Used to start traversals at the start of the table. 
+// PURPOSE: table iterator. Sets the input item to the first value (head) of the table. 
+// Sets traverseEntry to the next (second) entry.
+// Used to start traversals at the start of the table. 
 // INPUT: the pointer to the int that will store traverseEntry's value.
 // OUTPUT: returns true if the item was assigned a value and false if the item was *not*
 // assigned a value.
@@ -149,6 +156,30 @@ bool firstItem(int * const item)
 	// PRECONDITION: The table is valid, first item is a valid entry, the table has at 
 	// least one item.
 	// POSTCONDITION: The table is still valid, the first item is still a valid entry.
+	
+	bool result = false; 
+
+	if (head) // head != NULL
+	{
+		validTable();
+		validEntry(head);
+		assert(totalEntries >= 1);
+
+		*item = head -> value; 
+		traverseEntry = head -> next; 
+		result = true;
+	
+		validEntry(head);
+		assert(totalEntries >= 1);
+
+		if (totalEntries > 1)
+		{
+			validEntry(traverseEntry);
+		}
+		validTable();
+	}
+
+	return result;
 } // firstItem
 
 // ---------------------------------------------------------------------------------------
@@ -163,13 +194,34 @@ bool firstItem(int * const item)
 bool nextItem(int * const item)
 {
 	// PRECONDITIONS: the table is valid, totalEntries >= 2
-	// POSTCONDITIONS: the table is still valid, traverseEntry is still valid
+	// POSTCONDITIONS: the table is still valid, if traverseEntry isn't NULL then
+	// it should still be a vlid entry
+	
+	bool result = false;
+	
+	if (traverseEntry) // is not NULL
+	{
+		validTable();
+		assert(totalEntries >= 2);
+				
+		*item = traverseEntry -> value; 
+		traverseEntry = traverseEntry -> next;
+		result = true;
+	
+		validTable();
+		if (!traverseEntry)
+		{
+			validEntry(traverseEntry);
+		}
+	}
+
+	return result; 
 } // nextItem
 
 // ---------------------------------------------------------------------------------------
 // display
 //
-// PURPOSE: Prints out the entir table
+// PURPOSE: Prints out the entire table
 // -----------------------------------------------------------------------------------------
 static void display(void)
 {
@@ -178,17 +230,19 @@ static void display(void)
 	// specifics) 
 	// POSTCONDITIONS: the table is still valid
 	
-	assert(head!=NULL);
+	int value;
+	int * const valuePtr = &value;
+
+	assert(head != NULL);
 	validTable();
-
-	traverseEntry = head;
-
-	while(traverseEntry != NULL)
+	
+	if (firstItem(valuePtr))
 	{
-		printf("%i\n",traverseEntry -> value);
-		validEntry(traverseEntry);
-		traverseEntry = traverseEntry -> next;
-	}	
+		do
+		{	
+			printf("%d\n", value);
+		} while (nextItem(valuePtr));
+	}
 
 	printf("\nTotal Entries: %i", totalEntries);
 	
@@ -204,19 +258,25 @@ static void display(void)
 static bool validValue(int checkValue)
 {
 	bool valid = true;
-
-	traverseEntry = head;
+	int value;
+	int * const valuePtr = &value;
 	
-	while (traverseEntry != NULL)
+	// only start traversal if there is atleast on item on the table
+	if (totalEntries >= 1)
 	{
-		assert(traverseEntry -> value != checkValue);
-		if (traverseEntry -> value == checkValue)
-	        {
-			valid = false;
-			printf("not unique\n");
-	        }	       
+		firstItem(valuePtr);
+
+		while (value)
+		{
+			assert(value != checkValue);
+			if (value == checkValue)
+	        	{
+				valid = false;
+				printf("not unique\n");
+	        	}	       
 		
-		traverseEntry = traverseEntry -> next;
+			nextItem(valuePtr);
+		}
 	}
 
 	return valid;
@@ -229,10 +289,6 @@ static void validEntry(entry *checkEntry)
 {
 	assert(totalEntries >= 1); 
 	assert(head != NULL);
-	if(totalEntries > 1)
-	{
-		assert(checkEntry -> prev != NULL);
-	}
 
 } // validEntry
 
@@ -243,26 +299,31 @@ static void validEntry(entry *checkEntry)
 // ----------------------------------------------------------------------------------------
 static void validTable()
 {
-	traverseEntry = head; // pointer
 	int countAgain = 0;
 	
+	int oldValue;
+	int value;
+	int * const valuePtr = &value;
+
 	assert(totalEntries >= 1);
 	assert(head != NULL);
-	assert(tail -> next = NULL);
+	
+	firstItem(valuePtr);
 
-	while(traverseEntry != NULL)
+	if (totalEntries > 1)
 	{
-		validEntry(traverseEntry);
-		countAgain++;
-		if (totalEntries > 1)
-		{
+		while(value)
+		{	
+			oldValue = value;	
+			nextItem(valuePtr);
+			
 			// that the list is sorted so far and does not repeat
-			assert((traverseEntry -> value) < ((traverseEntry -> prev) -> value));
+			assert(oldValue != value);
+			assert(oldValue < value);	
+			countAgain++;
 		}
 	
-		traverseEntry = traverseEntry -> next;
+		assert(countAgain == totalEntries);
 	}
 
-	assert(countAgain == totalEntries);
-	
 } // validTable
