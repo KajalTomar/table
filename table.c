@@ -57,8 +57,8 @@ int main(void)
 		display();
 	}
 
-	//printf("\nLooking for 0: %i\n", search(0));
-	//printf("\nLooking for 5: %i\n", search(5));
+	printf("\nLooking for 0: %i\n", search(0));
+	printf("\nLooking for 5: %i\n", search(5));
 	//printf("\nLooking for 10: %i\n", search(10));
 	//printf("\nLooking for 15: %i\n", search(15));
 	//printf("\nLooking for 20: %i\n", search(20));
@@ -66,10 +66,10 @@ int main(void)
 	//printf("\nLooking for 30: %i\n", search(30));
 	//printf("\ndeleting 20: %i\n", removeItem(20));
 	//display();
-	//printf("\ndeleting 35: %i\n", removeItem(35));
-	//display();
-	//printf("\ndeleting 15: %i\n", removeItem(15));
-	//display();
+	printf("\ndeleting 35: %i\n", removeItem(35));
+	display();
+	printf("\ndeleting 5: %i\n", removeItem(5));
+	display();
 	//printf("\ndeleting 20: %i\n", removeItem(20));
 	//display();
 	//printf("\nDeleting 25: %i\n", removeItem(25));
@@ -94,61 +94,79 @@ int main(void)
 // -----------------------------------------------------------------------------------------
 bool insertItem(int item)
 {
-	// PRECONDITIONS: table either doesn't exist or is valid, that newValue is a valid
-	// entry
-	// POSTCONDITIONS: table is valid (checks for sorted), totalEntries increased by one, 
-	// totalEnteries >= 1
+	// PRECONDITIONS: table either doesn't exist or is valid
+	// POSTCONDITIONS: table is valid (checks for sorted and each value is unique), 
+	// totalEntries increased by exactly one, totalEnteries >= 1
 	
 	bool inserted = false; 
 	bool foundSpot = false;
-	entry * curr = head; 
-	entry * prev = NULL;
+	
+	entry * curr = head; // to iterate the table
+	entry * prev = NULL; // to iterate the table
 	entry * newEntry;
 
-	if (!search(item))
+	if (!search(item)) // only if the new item is unique
 	{
 		newEntry = malloc(sizeof(entry));
 		newEntry -> value = item;
-
-		if(!head)
+		
+		if(!head) // to add the first item in the table
 		{
+			assert(totalEntries == 0);
+			
+			clearTable();
+			
 			newEntry -> next = head;
 			head = newEntry;	
+			
+			assert(head);
 		} 
-		else  
+		else  // if at least 1 item (head) exists
 		{
-			while (curr != NULL && !foundSpot )
+			validTable();
+
+			// loop through the table until the correct spot to insert new item
+			while (curr != NULL && !foundSpot)
 			{
-				if (item < curr -> value)
-				{
+				if (item < curr -> value) // new item is smaller than current entry
+				{	
+					// then move along
 					prev = curr;
 					curr = curr -> next; 
 				}
-				else 
+				else // if the new item is bigger than the current entry
 				{
 					foundSpot = true;
 				}		
 			}
 
+			validTable();
+
 			if (prev == NULL) // newEntry is the higher than all the entries on the table
 			{
+				// make newEntry the head!
 				newEntry -> next = head;
 				head = newEntry;
 			} 
 			else if (curr == NULL) // newEntry is lower than all the entries on the table
 			{
+				// add it to the end of the table
 				prev -> next = newEntry;
 				newEntry -> next = NULL;
 			}
 			else // newEntry is in the middle of the table
 			{
+				// update the pointer accordingly
 				prev -> next = newEntry; 
 				newEntry -> next = curr;
 			}
 		}
-
+		
 		totalEntries++;
 		inserted = true;
+
+		validTable();
+		assert(totalEntries >= 1);
 	}
 
 	return inserted;	
@@ -168,45 +186,60 @@ bool removeItem(int item)
 	// either valid or HEAD == NULL. 
 	
 	bool removed = false;
-	entry * currPtr = head;
-	entry * prevPtr = NULL;
-	int currVal = currPtr -> value;
+	entry * curr = head;
+	entry * prev = NULL;
 
-		
-	if (currVal == item)
-	{
-		assert(head);
-		head = head -> next;
-		removed = true;
-	
-		totalEntries--;
-		assert(totalEntries >= 0);
-	}
-	else if(search(item))
-	{
-		assert(head);
+	if (head) // there needs to be at least one item
+	{	
 		validTable();
-		
-		while(currPtr && !removed)
-		{
-			prevPtr = currPtr;
-			
-			currPtr = currPtr -> next;
-			currVal = currPtr -> value;
+		assert(totalEntries >= 1);
 
-			if (currVal == item)
+		if (curr -> value == item) // to remove head
+		{
+			assert(head);
+			head = head -> next;
+			removed = true;
+	
+			totalEntries--;
+			assert(totalEntries >= 0);
+		}
+		else if(search(item)) // item != head but does exist on the table
+		{
+			assert(head);
+			validTable();
+		
+			while(curr && !removed) // loop until end of the table or until we find the spot
 			{
-				currPtr = currPtr -> next;	
-				prevPtr -> next = currPtr;
-				removed = true;
-				totalEntries--;
-			}				
+				prev = curr;
+				curr = curr -> next;
+
+				if (curr -> value == item) // we found the match!
+				{
+					// update pointers to exclude the item
+					curr = curr -> next;	
+					prev -> next = curr;
+
+					removed = true;
+					totalEntries--;
+				}					
+			}
+		
+			assert(head);
+			assert(totalEntries >= 1); // since head wasn't removed so at least 1 item remains
 		}
 		
-		validTable();
-		assert(head);
+		if (totalEntries == 0)
+		{
+			clearTable(); // just to be sure
+		}
+		else 
+		{
+			validTable(); 
+		}
+		
+		assert(!search(item)); // the item is no longer in the table
 		assert(totalEntries >= 0);
-	}		
+	}
 
 	if(totalEntries > 0)
 	{
@@ -235,17 +268,18 @@ void clearTable(void)
 	entry * curr = head;
 	entry * temp = NULL;
 		
-	assert(totalEntries >= 1);
 	
-	while(curr)
+	while(curr) // so only if at least one item exists
 	{
 		assert(head);
+		assert(totalEntries >= 1);
 
 		temp = curr;
 		curr = curr -> next;
 
-		free(temp);
+		free(temp); // be free!
 		temp = NULL;
+
 		totalEntries--;
 	}
 	
@@ -271,20 +305,19 @@ bool search (int item)
 	
 	bool found = false;
 	entry * curr = head;
-	int val; 
 	
 	// either table is empty and head is NULL or table is not empty and head exists.
 	assert((totalEntries == 0 && !head) || (totalEntries > 0 && head)); 
 
-	// only validate table if there is at least one entry
-	if (totalEntries > 0)
+	// only search table if there is at least one entry
+	if (head && totalEntries > 0)
 	{
 		validTable();
-	
-		while (curr)
+		
+		// loop until the end of the table or until we find the item
+		while (curr && !found)
 		{
-			val = curr -> value;
-			if(val == item)
+			if(curr -> value == item)
 			{
 				assert(curr -> value == item);
 				found = true;	
@@ -313,7 +346,7 @@ bool firstItem(int * const item)
 {
 	// PRECONDITION: The table is valid, head is not NULL, the table has at 
 	// least one item.
-	// POSTCONDITION: The table is still valid, the first item is still a valid entry.
+	// POSTCONDITION: The table is still valid, head != NULL.
 	
 	bool result = false; 
 
@@ -323,10 +356,10 @@ bool firstItem(int * const item)
 		assert(head);
 		assert(totalEntries >= 1);
 
-		*item = head -> value; 
-		traverseEntry = head -> next; 
+		*item = head -> value; // asign value
+		traverseEntry = head -> next;  // update traverseEntry
 		result = true;
-	
+
 		validTable();
 		assert(totalEntries >= 1);
 		assert(head);
@@ -356,8 +389,8 @@ bool nextItem(int * const item)
 		validTable();
 		assert(totalEntries >= 2);
 				
-		*item = traverseEntry -> value; 
-		traverseEntry = traverseEntry -> next;
+		*item = traverseEntry -> value; // assign value
+		traverseEntry = traverseEntry -> next; // update traverseEntry
 		result = true;
 	
 		validTable();
@@ -380,18 +413,21 @@ static void display(void)
 	entry * curr = head;
 	int val;
 
-	if(totalEntries > 0)
+	if(totalEntries > 0) // only if the table exists
 	{
 		validTable();
+
+		// loop until the end of the table
 		while (curr)
 		{	
 			val = curr -> value; 
 			printf("%d\n", val);
 			curr = curr -> next;
 		}
+
 	       validTable();
 	}	       
-	else 
+	else  // the table doesn't exist
 	{
 		assert(totalEntries == 0);
 		assert(!head);
@@ -409,7 +445,7 @@ static void display(void)
 // ----------------------------------------------------------------------------------------
 static void validTable()
 {
-	int countAgain = 0;
+	int countAgain = 0; // we will recount the entries
 	
 	entry * curr = head;
 	entry * prev = NULL;
@@ -417,23 +453,28 @@ static void validTable()
 	assert(totalEntries >= 1);
 	assert(head);
 	
-	if(totalEntries > 1)
+	if(totalEntries > 1) 
 	{
 		prev = curr;
-		curr = curr-> next;
-
+		curr = curr -> next;
+		
+		// loop the whole table
 		while (curr)
 		{	
-			// that the list is sorted so far and does not repeat
+			// check that the list is sorted so far and does not repeat
 			assert(prev -> value != curr -> value);
 			assert(prev -> value > curr -> value);	
 			
 			prev = curr; 
 			curr = curr -> next;
+			
 			countAgain++;
 		} 
 		
 		countAgain++; // to account for the last item on the list	
+		
+		// confirm that countAgain is accurate
 		assert(countAgain == totalEntries);
 	}
+
 } // validTable
