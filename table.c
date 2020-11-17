@@ -99,46 +99,59 @@ bool insertItem(int item)
 	// POSTCONDITIONS: table is valid (checks for sorted), totalEntries increased by one, 
 	// totalEnteries >= 1
 	
-	bool result = false;
-	entry * currPtr = NULL;
-	entry * prevPtr = NULL;
-       	entry * newEntry = NULL; 
-	
-	if(!search(item))
+	bool inserted = false; 
+	bool foundSpot = false;
+	entry * curr = head; 
+	entry * prev = NULL;
+	entry * newEntry;
+
+	if (!search(item))
 	{
 		newEntry = malloc(sizeof(entry));
 		newEntry -> value = item;
 
-		if ((totalEntries == 0 && !head) || (head -> value > item))
+		if(!head)
 		{
 			newEntry -> next = head;
-			head = newEntry;
-			result = true;
-			totalEntries++;
-		}		
-		else 
+			head = newEntry;	
+		} 
+		else  
 		{
-			prevPtr = head;
-			currPtr = prevPtr -> next;
-
-			while (currPtr && !result)
+			while (curr != NULL && !foundSpot )
 			{
-				if((prevPtr -> value > item) && (currPtr == NULL || currPtr -> value < item))
+				if (item < curr -> value)
 				{
-					prevPtr -> next = newEntry; 
-					newEntry -> next = currPtr;
-					result = true;
-					totalEntries++;
+					prev = curr;
+					curr = curr -> next; 
 				}
-				
-				prevPtr = currPtr;
-				currPtr = currPtr -> next;
+				else 
+				{
+					foundSpot = true;
+				}		
+			}
+
+			if (prev == NULL) // newEntry is the higher than all the entries on the table
+			{
+				newEntry -> next = head;
+				head = newEntry;
+			} 
+			else if (curr == NULL) // newEntry is lower than all the entries on the table
+			{
+				prev -> next = newEntry;
+				newEntry -> next = NULL;
+			}
+			else // newEntry is in the middle of the table
+			{
+				prev -> next = newEntry; 
+				newEntry -> next = curr;
 			}
 		}
-	}	
 
-	return result;
-	
+		totalEntries++;
+		inserted = true;
+	}
+
+	return inserted;	
 } // insertItem
 
 // -----------------------------------------------------------------------------------------
@@ -399,28 +412,28 @@ static void validTable()
 	int countAgain = 0;
 	
 	entry * curr = head;
-	int value = curr -> value; 
-	int oldValue;
+	entry * prev = NULL;
 	
 	assert(totalEntries >= 1);
 	assert(head);
-
-	if (totalEntries > 1)
+	
+	if(totalEntries > 1)
 	{
-		while (curr -> next)
+		prev = curr;
+		curr = curr-> next;
+
+		while (curr)
 		{	
-			oldValue = value;	
-			curr = curr -> next;
-			value = curr -> value;
-			
 			// that the list is sorted so far and does not repeat
-			assert(oldValue != value);
-			assert(oldValue > value);	
+			assert(prev -> value != curr -> value);
+			assert(prev -> value > curr -> value);	
+			
+			prev = curr; 
+			curr = curr -> next;
 			countAgain++;
 		} 
 		
 		countAgain++; // to account for the last item on the list	
 		assert(countAgain == totalEntries);
 	}
-
 } // validTable
