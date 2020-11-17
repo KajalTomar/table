@@ -1,16 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <ctype.h>
+
+#include"table.h"
 
 // -----------------------------------------------------------------------------------------------
 // CONSTANTS AND TYPES
 // -----------------------------------------------------------------------------------------------
 
-typedef struct Entry entry; 
-typedef enum BOOL {false, true} bool;
+typedef static struct Entry entry; 
+// typedef static enum BOOL {false, true} bool;
 
-struct Entry 
+static struct Entry 
 {
 	entry *next;
 	int value;
@@ -22,67 +23,15 @@ static int totalEntries = 0;
 
 
 // -----------------------------------------------------------------------------------------------
-// PROTOTYPES
+// IMPLEMENTATION PROTOTYPES
 // -----------------------------------------------------------------------------------------------
-
-bool insertItem(int);
-bool removeItem(int); 
-void clearTable(void);
-bool search(int);
-bool firstItem(int * const);
-bool nextItem(int * const);
 
 static void display(void);
 static void validTable(void);
 
-int main(void)
-{
-	
-	//entry *newEntry = NULL; 
-	int i;
-	int size = 5;
-	int value; 
-
-	for(i = 0; i <= size; i++)
-	{
-	//	newEntry = malloc( sizeof(entry));
-	//	newEntry -> value = i*size;
-	//	newEntry -> next = head;
-		
-	//	head = newEntry;
-	//	totalEntries++;
-		printf("What number do you want to add? " );
-		scanf("%i", &value);
-		printf("%i\n",insertItem(value));
-		display();
-	}
-
-	printf("\nLooking for 0: %i\n", search(0));
-	printf("\nLooking for 5: %i\n", search(5));
-	//printf("\nLooking for 10: %i\n", search(10));
-	//printf("\nLooking for 15: %i\n", search(15));
-	//printf("\nLooking for 20: %i\n", search(20));
-	//printf("\nLooking for 25: %i\n", search(25));
-	//printf("\nLooking for 30: %i\n", search(30));
-	//printf("\ndeleting 20: %i\n", removeItem(20));
-	//display();
-	printf("\ndeleting 35: %i\n", removeItem(35));
-	display();
-	printf("\ndeleting 5: %i\n", removeItem(5));
-	display();
-	//printf("\ndeleting 20: %i\n", removeItem(20));
-	//display();
-	//printf("\nDeleting 25: %i\n", removeItem(25));
-	//display();
-	//printf("\nDeleting 0: %i\n", removeItem(0));
-	//display();
-
-	printf("\n");
-
-	printf("\nend of processing.");
-	return 0;
-
-} // main
+// -----------------------------------------------------------------------------------------------
+// FUNCTIONS
+// -----------------------------------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------------------
 // insertItem

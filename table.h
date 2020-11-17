@@ -27,4 +27,4 @@ Boolean search( int item );
 Boolean firstItem( int * const item );
 Boolean nextItem( int * const item );
 
-#endif
+#endif // _TABLE_H
