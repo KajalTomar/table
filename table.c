@@ -38,40 +38,44 @@ static void validTable(void);
 int main(void)
 {
 	
-	entry *newEntry = NULL; 
+	//entry *newEntry = NULL; 
 	int i;
 	int size = 5;
-	
-	for(i = 0; i < size; i++)
+	int value; 
+
+	for(i = 0; i <= size; i++)
 	{
-		newEntry = malloc( sizeof(entry));
-		newEntry -> value = i*size;
-		newEntry -> next = head;
+	//	newEntry = malloc( sizeof(entry));
+	//	newEntry -> value = i*size;
+	//	newEntry -> next = head;
 		
-		head = newEntry;
-		totalEntries++;
-//		printf("What number do you want to add?" );
-//		scanf("%d", &value);
-//		printf("%i\n",insertItem(value));
+	//	head = newEntry;
+	//	totalEntries++;
+		printf("What number do you want to add? " );
+		scanf("%i", &value);
+		printf("%i\n",insertItem(value));
+		display();
 	}
 
-	display();
-	printf("\nLooking for 0: %i\n", search(0));
-	printf("\nLooking for 5: %i\n", search(5));
-	printf("\nLooking for 10: %i\n", search(10));
-	printf("\nLooking for 15: %i\n", search(15));
-	printf("\nLooking for 20: %i\n", search(20));
-	printf("\nLooking for 25: %i\n", search(25));
-	printf("\nLooking for 30: %i\n", search(30));
-	clearTable();
-	display();
-	printf("\nLooking for 0: \n");
-	printf("\nLooking for 5: %i\n", search(5));
-	printf("\nLooking for 10: %i\n", search(10));
-	printf("\nLooking for 15: %i\n", search(15));
-	printf("\nLooking for 20: %i\n", search(20));
-	printf("\nLooking for 25: %i\n", search(25));
-	printf("\nLooking for 30: %i\n", search(30));
+	//printf("\nLooking for 0: %i\n", search(0));
+	//printf("\nLooking for 5: %i\n", search(5));
+	//printf("\nLooking for 10: %i\n", search(10));
+	//printf("\nLooking for 15: %i\n", search(15));
+	//printf("\nLooking for 20: %i\n", search(20));
+	//printf("\nLooking for 25: %i\n", search(25));
+	//printf("\nLooking for 30: %i\n", search(30));
+	//printf("\ndeleting 20: %i\n", removeItem(20));
+	//display();
+	//printf("\ndeleting 35: %i\n", removeItem(35));
+	//display();
+	//printf("\ndeleting 15: %i\n", removeItem(15));
+	//display();
+	//printf("\ndeleting 20: %i\n", removeItem(20));
+	//display();
+	//printf("\nDeleting 25: %i\n", removeItem(25));
+	//display();
+	//printf("\nDeleting 0: %i\n", removeItem(0));
+	//display();
 
 	printf("\n");
 
@@ -95,7 +99,43 @@ bool insertItem(int item)
 	// POSTCONDITIONS: table is valid (checks for sorted), totalEntries increased by one, 
 	// totalEnteries >= 1
 	
-	bool result = true;
+	bool result = false;
+	entry * currPtr = NULL;
+	entry * prevPtr = NULL;
+       	entry * newEntry = NULL; 
+	
+	if(!search(item))
+	{
+		newEntry = malloc(sizeof(entry));
+		newEntry -> value = item;
+
+		if ((totalEntries == 0 && !head) || (head -> value > item))
+		{
+			newEntry -> next = head;
+			head = newEntry;
+			result = true;
+			totalEntries++;
+		}		
+		else 
+		{
+			prevPtr = head;
+			currPtr = prevPtr -> next;
+
+			while (currPtr && !result)
+			{
+				if((prevPtr -> value > item) && (currPtr == NULL || currPtr -> value < item))
+				{
+					prevPtr -> next = newEntry; 
+					newEntry -> next = currPtr;
+					result = true;
+					totalEntries++;
+				}
+				
+				prevPtr = currPtr;
+				currPtr = currPtr -> next;
+			}
+		}
+	}	
 
 	return result;
 	
@@ -114,15 +154,59 @@ bool removeItem(int item)
 	// POSTCONDITIONS: The table does not include item, totalEntries => 0, table is 
 	// either valid or HEAD == NULL. 
 	
-	bool result = false;
-	entry * curr = head;
+	bool removed = false;
+	entry * currPtr = head;
+	entry * prevPtr = NULL;
+	int currVal = currPtr -> value;
 
-	if (search(item))
+		
+	if (currVal == item)
 	{
+		assert(head);
+		head = head -> next;
+		removed = true;
 	
+		totalEntries--;
+		assert(totalEntries >= 0);
+	}
+	else if(search(item))
+	{
+		assert(head);
+		validTable();
+		
+		while(currPtr && !removed)
+		{
+			prevPtr = currPtr;
+			
+			currPtr = currPtr -> next;
+			currVal = currPtr -> value;
+
+			if (currVal == item)
+			{
+				currPtr = currPtr -> next;	
+				prevPtr -> next = currPtr;
+				removed = true;
+				totalEntries--;
+			}				
+		}
+		
+		validTable();
+		assert(head);
+		assert(totalEntries >= 0);
+	}		
+
+	if(totalEntries > 0)
+	{
+		assert(head);
+		validTable();
+	} 
+	else 
+	{
+		assert(!head);
 	}
 
-	return result;
+	return removed;
+
 } // removeItem
 
 // -----------------------------------------------------------------------------------------
@@ -183,23 +267,19 @@ bool search (int item)
 	if (totalEntries > 0)
 	{
 		validTable();
-	}
-
-	while (curr)
-	{
-		val = curr -> value;
-		if(val == item)
+	
+		while (curr)
 		{
-			assert(curr -> value == item);
-			found = true;	
-		}	
+			val = curr -> value;
+			if(val == item)
+			{
+				assert(curr -> value == item);
+				found = true;	
+			}	
 		
-		curr = curr -> next;
-	}
+			curr = curr -> next;
+		}
 
-	if(totalEntries > 0)
-	{
-		// is table still valid?
 		validTable();
 	}
 
