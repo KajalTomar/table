@@ -5,13 +5,15 @@
 #include"table.h"
 
 // -----------------------------------------------------------------------------------------------
-// CONSTANTS AND TYPES
+// CONSTANTS, DEFINITIONS AND TYPES
 // -----------------------------------------------------------------------------------------------
 
-typedef static struct Entry entry; 
-// typedef static enum BOOL {false, true} bool;
+#define MAX_LENGTH 100
 
-static struct Entry 
+typedef struct Entry entry; 
+//typedef enum BOOL {false, true} bool;
+
+struct Entry 
 {
 	entry *next;
 	int value;
@@ -25,8 +27,6 @@ static int totalEntries = 0;
 // -----------------------------------------------------------------------------------------------
 // IMPLEMENTATION PROTOTYPES
 // -----------------------------------------------------------------------------------------------
-
-static void display(void);
 static void validTable(void);
 
 // -----------------------------------------------------------------------------------------------
@@ -49,7 +49,7 @@ bool insertItem(int item)
 	
 	bool inserted = false; 
 	bool foundSpot = false;
-	
+		
 	entry * curr = head; // to iterate the table
 	entry * prev = NULL; // to iterate the table
 	entry * newEntry;
@@ -137,6 +137,7 @@ bool removeItem(int item)
 	bool removed = false;
 	entry * curr = head;
 	entry * prev = NULL;
+	entry * nextEntry = NULL;
 
 	if (head) // there needs to be at least one item
 	{	
@@ -165,8 +166,9 @@ bool removeItem(int item)
 				if (curr -> value == item) // we found the match!
 				{
 					// update pointers to exclude the item
-					curr = curr -> next;	
-					prev -> next = curr;
+					nextEntry = curr -> next;	
+					free(curr);			
+					prev -> next = nextEntry;
 
 					removed = true;
 					totalEntries--;
@@ -348,44 +350,6 @@ bool nextItem(int * const item)
 
 	return result; 
 } // nextItem
-
-// ---------------------------------------------------------------------------------------
-// display
-//
-// PURPOSE: Implementation method. Prints out the entire table.
-// -----------------------------------------------------------------------------------------
-static void display(void)
-{
-	// PRECONDITIONS: the table is valid (check validTable for more specifics) 
-	// POSTCONDITIONS: the table is still valid
-	
-	entry * curr = head;
-	int val;
-
-	if(totalEntries > 0) // only if the table exists
-	{
-		validTable();
-
-		// loop until the end of the table
-		while (curr)
-		{	
-			val = curr -> value; 
-			printf("%d\n", val);
-			curr = curr -> next;
-		}
-
-	       validTable();
-	}	       
-	else  // the table doesn't exist
-	{
-		assert(totalEntries == 0);
-		assert(!head);
-		printf("The table is empty. \n");
-	}
-
-	printf("\nTotal Entries: %i\n", totalEntries);
-
-} // display
 
 // ----------------------------------------------------------------------------------------
 // validTable
