@@ -1,3 +1,13 @@
+// -----------------------------------------------------------------------------------------------
+// NAME: Kajal Tomar
+// STUDENT NUMBER: 7793306
+// COURSE: COMP2160, SECTION: A01
+// INSTRUCTOR: Dr.Mehdi Niknam
+// ASSIGNMENT: 3, QUESTION 1
+//
+// REMARKS: This is my implementation of a table ADT that uses a linked list. 
+// -----------------------------------------------------------------------------------------------
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -23,10 +33,10 @@ static entry *head = NULL; // first item
 static entry *traverseEntry = NULL; // used to track where we are for table traversal functions
 static int totalEntries = 0;
 
-
 // -----------------------------------------------------------------------------------------------
 // IMPLEMENTATION PROTOTYPES
 // -----------------------------------------------------------------------------------------------
+
 static void validTable(void);
 
 // -----------------------------------------------------------------------------------------------
@@ -165,11 +175,20 @@ bool removeItem(int item)
 
 				if (curr -> value == item) // we found the match!
 				{
+					
 					// update pointers to exclude the item
 					nextEntry = curr -> next;	
+					
+					// if traverseEntry is currently pointing here, update it to the next entry
+					if(traverseEntry == curr)
+					{
+						traverseEntry = nextEntry;
+					}
+
 					free(curr);			
 					prev -> next = nextEntry;
-
+					
+					
 					removed = true;
 					totalEntries--;
 				}					
@@ -234,6 +253,7 @@ void clearTable(void)
 		totalEntries--;
 	}
 	
+	traverseEntry = NULL;
 	head = NULL;
 
 	assert(totalEntries == 0);
