@@ -1,10 +1,4 @@
 //------------------------------------------------------------------------------
-// NAME: Kajal Tomar
-// STUDENT NUMBER: 7793306
-// COURSE: COMP2160, SECTION: A01
-// INSTRUCTOR: Dr. Mehdi Niknam
-// ASSIGNMENT: 3, QUESTION: 1
-// 
 // REMARKS: This is the automated test suite for the table.c ADT implementation.. 
 //-------------------------------------------------------------------------------
 
