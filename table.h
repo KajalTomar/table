@@ -1,10 +1,4 @@
 //------------------------------------------------------------------------------
-// NAME: Kajal Tomar
-// STUDENT NUMBER: 7793306
-// COURSE: COMP2160, SECTION: A01
-// INSTRUCTOR: Dr.Mehdi Niknam
-// ASSIGNMENT: 3, QUESTION: 1
-// 
 // REMARKS: This is the header file the table.c. It's interface and contains
 // the function declarations and the macro definitios for table.c.
 //-------------------------------------------------------------------------------
